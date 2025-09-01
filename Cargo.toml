@@ -1,0 +1,12 @@
+[package]
+name = "ml-dsa"
+version = "0.1.0"
+edition = "2021"
+description = "Pure rust implementation of ML-DSA (formerly CRYSTALS-Dilithium) ported from NIST reference."
+license = "MIT"
+
+[dependencies]
+getrandom = "0.2"
+
+[dev-dependencies]
+hex = "0.4"
