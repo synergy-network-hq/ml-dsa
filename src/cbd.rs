@@ -25,6 +25,21 @@ pub fn rej_eta(a: &mut [i32], len: usize, buf: &[u8], buflen: usize) -> usize {
         let t1 = (buf[pos] >> 4) as u32;
         pos += 1;
 
+        #[cfg(feature = "eta2")]
+        if ETA == 2 {
+            if t0 < 15 {
+                let t0 = t0 - ((205 * t0) >> 10) * 5;
+                a[ctr] = 2 - (t0 as i32);
+                ctr += 1;
+            }
+            if t1 < 15 && ctr < len {
+                let t1 = t1 - ((205 * t1) >> 10) * 5;
+                a[ctr] = 2 - (t1 as i32);
+                ctr += 1;
+            }
+        }
+
+        #[cfg(not(feature = "eta2"))]
         if ETA == 4 {
             if t0 < 9 {
                 a[ctr] = 4 - (t0 as i32);
