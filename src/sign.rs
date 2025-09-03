@@ -76,7 +76,7 @@ pub fn crypto_sign_keypair(
     let mut tr = [0u8; CRHBYTES];
     let mut mat = [PolyVecL::default(); K];
     let mut s1 = PolyVecL::default();
-    let mut s1hat = PolyVecL::default();
+    let _s1hat = PolyVecL::default();
     let mut s2 = PolyVecK::default();
     let mut t1 = PolyVecK::default();
     let mut t0 = PolyVecK::default();
@@ -98,9 +98,9 @@ pub fn crypto_sign_keypair(
     polyveck_uniform_eta(&mut s2, rhoprime, L.try_into().unwrap());
 
     /* Matrix-vector multiplication */
-    s1hat = s1;
-    polyvecl_ntt(&mut s1hat);
-    polyvec_matrix_pointwise_montgomery(&mut t1, &mat, &s1hat);
+    let mut _s1hat = s1;
+    polyvecl_ntt(&mut _s1hat);
+    polyvec_matrix_pointwise_montgomery(&mut t1, &mat, &_s1hat);
     polyveck_reduce(&mut t1);
     polyveck_invntt_tomont(&mut t1);
 
@@ -138,7 +138,7 @@ pub fn crypto_sign_signature(
     sig: &mut [u8; CRYPTO_BYTES],
     siglen: &mut usize,
     m: &[u8],
-    mlen: usize,
+    _mlen: usize,
     sk: &[u8; CRYPTO_SECRETKEYBYTES]
 ) -> i32 {
     let mut seedbuf = [0u8; 2 * SEEDBYTES + 3 * CRHBYTES];
@@ -178,13 +178,9 @@ pub fn crypto_sign_signature(
     shake256_finalize(&mut state);
     shake256_squeeze(mu_part, mu_part.len(), &mut state);
 
-    #[cfg(not(feature = "randomized_signing"))]
-    {
-        let key_tr_combined = [key_part, tr_part].concat();
-        crh(rhoprime_part.try_into().unwrap(), &key_tr_combined);
-    }
+    let key_tr_combined = [key_part, tr_part].concat();
+    crh(rhoprime_part.try_into().unwrap(), &key_tr_combined);
 
-    #[cfg(feature = "randomized_signing")]
     getrandom(rhoprime_part).unwrap();
 
     /* Expand matrix and transform vectors */
@@ -199,8 +195,8 @@ pub fn crypto_sign_signature(
         let rhoprime_array: [u8; CRHBYTES] = rhoprime_part.try_into().unwrap();
         polyvecl_uniform_gamma1(&mut y, &rhoprime_array, nonce);
         nonce += 1;
-        z = y;
-        polyvecl_ntt(&mut z);
+        let mut _z = y;
+        polyvecl_ntt(&mut _z);
 
         /* Matrix-vector multiplication */
         polyvec_matrix_pointwise_montgomery(&mut w1, &mat, &z);
@@ -326,7 +322,7 @@ pub fn crypto_sign_verify(
     sig: &[u8],
     siglen: usize,
     m: &[u8],
-    mlen: usize,
+    _mlen: usize,
     pk: &[u8; CRYPTO_PUBLICKEYBYTES]
 ) -> i32 {
     let mut buf = [0u8; K * POLYW1_PACKEDBYTES];

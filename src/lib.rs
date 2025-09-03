@@ -13,7 +13,7 @@ pub mod sign;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
     use crate::sign::{ crypto_sign_keypair, crypto_sign_signature, crypto_sign_verify };
 
     #[test]

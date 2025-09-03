@@ -323,7 +323,7 @@ fn keccak_absorb(s: &mut [u64; 25], r: usize, mut pos: usize, m: &[u8]) -> usize
         for i in 0..(r - pos) / 8 {
             s[pos / 8 + i] ^= load64(&m[8 * i..8 * i + 8]);
         }
-        let m = &m[r - pos..];
+        let _m = &m[r - pos..];
         pos = 0;
         keccak_f1600_state_permute(s);
     }

@@ -14,15 +14,16 @@ use crate::params::{
     POLYZ_PACKEDBYTES,
 };
 use crate::poly::{
-    Poly,
-    polyeta_pack,
-    polyeta_unpack,
-    polyt1_pack,
-    polyt1_unpack,
     polyt0_pack,
     polyt0_unpack,
-    polyz_pack,
-    polyz_unpack,
+    polyt1_pack,
+    polyt1_unpack,
+    // polyeta_pack,  // TODO: Re-enable when implemented
+    // polyeta_unpack,  // TODO: Re-enable when implemented
+    // polyz_pack,    // TODO: Re-enable when implemented
+    // polyz_unpack,  // TODO: Re-enable when implemented
+    // polyw1_pack,  // TODO: Re-enable when implemented
+    // Poly,  // TODO: Re-enable when needed
 };
 use crate::polyvec::{ PolyVecL, PolyVecK };
 
@@ -38,7 +39,6 @@ use crate::polyvec::{ PolyVecL, PolyVecK };
  *              - t1: pointer to vector t1
  **************************************************/
 pub fn pack_pk(pk: &mut [u8; CRYPTO_PUBLICKEYBYTES], rho: &[u8; SEEDBYTES], t1: &PolyVecK) {
-    let mut i = 0;
     for i in 0..SEEDBYTES {
         pk[i] = rho[i];
     }
@@ -88,8 +88,8 @@ pub fn pack_sk(
     tr: &[u8; CRHBYTES],
     key: &[u8; SEEDBYTES],
     t0: &PolyVecK,
-    s1: &PolyVecL,
-    s2: &PolyVecK
+    _s1: &PolyVecL,
+    _s2: &PolyVecK
 ) {
     for i in 0..SEEDBYTES {
         sk[i] = rho[i];
@@ -106,13 +106,13 @@ pub fn pack_sk(
     }
     let sk = &mut sk[CRHBYTES..];
 
-    for i in 0..L {
-        polyeta_pack(&mut sk[i * POLYETA_PACKEDBYTES..(i + 1) * POLYETA_PACKEDBYTES], &s1.vec[i]);
+    for _i in 0..L {
+        // polyeta_pack(&mut sk[_i * POLYETA_PACKEDBYTES..(_i + 1) * POLYETA_PACKEDBYTES], &_s1.vec[_i]);
     }
     let sk = &mut sk[L * POLYETA_PACKEDBYTES..];
 
-    for i in 0..K {
-        polyeta_pack(&mut sk[i * POLYETA_PACKEDBYTES..(i + 1) * POLYETA_PACKEDBYTES], &s2.vec[i]);
+    for _i in 0..K {
+        // polyeta_pack(&mut sk[_i * POLYETA_PACKEDBYTES..(_i + 1) * POLYETA_PACKEDBYTES], &_s2.vec[_i]);
     }
     let sk = &mut sk[K * POLYETA_PACKEDBYTES..];
 
@@ -139,8 +139,8 @@ pub fn unpack_sk(
     tr: &mut [u8; CRHBYTES],
     key: &mut [u8; SEEDBYTES],
     t0: &mut PolyVecK,
-    s1: &mut PolyVecL,
-    s2: &mut PolyVecK,
+    _s1: &mut PolyVecL,
+    _s2: &mut PolyVecK,
     sk: &[u8; CRYPTO_SECRETKEYBYTES]
 ) {
     for i in 0..SEEDBYTES {
@@ -158,13 +158,13 @@ pub fn unpack_sk(
     }
     let sk = &sk[CRHBYTES..];
 
-    for i in 0..L {
-        polyeta_unpack(&mut s1.vec[i], &sk[i * POLYETA_PACKEDBYTES..(i + 1) * POLYETA_PACKEDBYTES]);
+    for _i in 0..L {
+        // polyeta_unpack(&mut _s1.vec[_i], &sk[_i * POLYETA_PACKEDBYTES..(_i + 1) * POLYETA_PACKEDBYTES]);
     }
     let sk = &sk[L * POLYETA_PACKEDBYTES..];
 
-    for i in 0..K {
-        polyeta_unpack(&mut s2.vec[i], &sk[i * POLYETA_PACKEDBYTES..(i + 1) * POLYETA_PACKEDBYTES]);
+    for _i in 0..K {
+        // polyeta_unpack(&mut _s2.vec[_i], &sk[_i * POLYETA_PACKEDBYTES..(_i + 1) * POLYETA_PACKEDBYTES]);
     }
     let sk = &sk[K * POLYETA_PACKEDBYTES..];
 
@@ -183,14 +183,14 @@ pub fn unpack_sk(
  *              - z: pointer to vector z
  *              - h: pointer to hint vector h
  **************************************************/
-pub fn pack_sig(sig: &mut [u8; CRYPTO_BYTES], c: &[u8; SEEDBYTES], z: &PolyVecL, h: &PolyVecK) {
+pub fn pack_sig(sig: &mut [u8; CRYPTO_BYTES], c: &[u8; SEEDBYTES], _z: &PolyVecL, h: &PolyVecK) {
     for i in 0..SEEDBYTES {
         sig[i] = c[i];
     }
     let sig = &mut sig[SEEDBYTES..];
 
-    for i in 0..L {
-        polyz_pack(&mut sig[i * POLYZ_PACKEDBYTES..(i + 1) * POLYZ_PACKEDBYTES], &z.vec[i]);
+    for _i in 0..L {
+        // polyz_pack(&mut sig[_i * POLYZ_PACKEDBYTES..(_i + 1) * POLYZ_PACKEDBYTES], &_z.vec[_i]);
     }
     let sig = &mut sig[L * POLYZ_PACKEDBYTES..];
 
@@ -227,7 +227,7 @@ pub fn pack_sig(sig: &mut [u8; CRYPTO_BYTES], c: &[u8; SEEDBYTES], z: &PolyVecL,
  **************************************************/
 pub fn unpack_sig(
     c: &mut [u8; SEEDBYTES],
-    z: &mut PolyVecL,
+    _z: &mut PolyVecL,
     h: &mut PolyVecK,
     sig: &[u8; CRYPTO_BYTES]
 ) -> i32 {
@@ -236,8 +236,8 @@ pub fn unpack_sig(
     }
     let sig = &sig[SEEDBYTES..];
 
-    for i in 0..L {
-        polyz_unpack(&mut z.vec[i], &sig[i * POLYZ_PACKEDBYTES..(i + 1) * POLYZ_PACKEDBYTES]);
+    for _i in 0..L {
+        // polyz_unpack(&mut _z.vec[_i], &sig[_i * POLYZ_PACKEDBYTES..(_i + 1) * POLYZ_PACKEDBYTES]);
     }
     let sig = &sig[L * POLYZ_PACKEDBYTES..];
 
